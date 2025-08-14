@@ -1,5 +1,9 @@
+using AutoMapper;
 using DevWorkshop.TaskAPI.Application.DTOs.Users;
 using DevWorkshop.TaskAPI.Application.Interfaces;
+using DevWorkshop.TaskAPI.Domain.Entities;
+using Microsoft.Extensions.Logging;
+using System.Linq.Expressions;
 
 namespace DevWorkshop.TaskAPI.Application.Services;
 
@@ -9,11 +13,19 @@ namespace DevWorkshop.TaskAPI.Application.Services;
 public class UserService : IUserService
 {
     // TODO: ESTUDIANTE - Inyectar dependencias necesarias (DbContext, AutoMapper, Logger)
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
+    private readonly ILogger<UserService> _logger;
+
     
-    public UserService()
+    public UserService(IUnitOfWork unitOfWork, IMapper mapper, ILogger<UserService> logger)
     {
-        // TODO: ESTUDIANTE - Configurar las dependencias inyectadas
+        _unitOfWork = unitOfWork;
+        _mapper = mapper;
+        _logger = logger;
     }
+        // TODO: ESTUDIANTE - Configurar las dependencias inyectadas
+    
 
     /// <summary>
     /// TODO: ESTUDIANTE - Implementar la obtención de todos los usuarios activos
@@ -58,8 +70,30 @@ public class UserService : IUserService
     public async Task<UserDto?> GetUserByEmailAsync(string email)
     {
         // TODO: ESTUDIANTE - Implementar lógica
-        throw new NotImplementedException("Método pendiente de implementación por el estudiante");
+        try
+        {
+            _logger.LogInformation("Buscando usuario por email: {Email}", email);
+
+            var user = await _unitOfWork.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+            if (user == null)
+            {
+                _logger.LogInformation("No se encontró usuario con email: {Email}", email);
+                return null;
+            }
+
+            var userDto = _mapper.Map<UserDto>(user);
+
+            _logger.LogInformation("Usuario encontrado con ID: {UserId}", user.UserId);
+            return userDto;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al buscar usuario por email: {Email}", email);
+            throw;
+        }
     }
+    
 
     /// <summary>
     /// TODO: ESTUDIANTE - Implementar la creación de un nuevo usuario
@@ -74,8 +108,37 @@ public class UserService : IUserService
     /// </summary>
     public async Task<UserDto> CreateUserAsync(CreateUserDto createUserDto)
     {
-        // TODO: ESTUDIANTE - Implementar lógica
-        throw new NotImplementedException("Método pendiente de implementación por el estudiante");
+        try
+        {
+            var emailformat = createUserDto.Email.Trim().ToLower();
+            var validuser = await _unitOfWork.Users.FirstOrDefaultAsync(u => u.Email == emailformat);
+            if (validuser != null)
+            {
+                throw new InvalidCastException("Usuario ya creado");
+            }
+
+            var passwordHasch = BCrypt.Net.BCrypt.HashPassword(createUserDto.Password);
+
+            var user = _mapper.Map<User>(createUserDto);
+            user.Email = emailformat;
+            user.PasswordHash = passwordHasch;
+            user.CreatedAt = DateTime.Now;
+            user.UpdatedAt = DateTime.Now;
+            user.LastTokenIssueAt = DateTime.Now;
+            user.RoleId = 4;
+
+
+            var createUser = await _unitOfWork.Users.AddAsync(user);
+            await _unitOfWork.SaveChangesAsync();
+
+            return _mapper.Map<UserDto>(createUser);
+
+        }
+        catch (Exception ex)
+        {
+            throw;
+        }
+        
     }
 
     /// <summary>
@@ -125,5 +188,142 @@ public class UserService : IUserService
     {
         // TODO: ESTUDIANTE - Implementar lógica
         throw new NotImplementedException("Método pendiente de implementación por el estudiante");
+    }
+
+    Task<IEnumerable<UserDto>> IUserService.GetAllUsersAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    Task<UserDto?> IUserService.GetUserByIdAsync(int userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task<UserDto?> IUserService.GetUserByEmailAsync(string email)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task<UserDto> IUserService.CreateUserAsync(CreateUserDto createUserDto)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task<UserDto?> IUserService.UpdateUserAsync(int userId, UpdateUserDto updateUserDto)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task<bool> IUserService.DeleteUserAsync(int userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task<bool> IUserService.EmailExistsAsync(string email, int? excludeUserId)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task<User?> IUserService.GetUserEntityByEmailAsync(string email)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task<User?> IUserService.GetUserEntityByIdAsync(int userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task<bool> IUserService.UpdateUserEntityAsync(User user)
+    {
+        throw new NotImplementedException();
+    }
+    /// <summary>
+    /// Obtiene la entidad User completa por email
+    /// </summary>
+    public async Task<User?> GetUserEntityByEmailAsync(string email)
+    {
+        try
+        {
+            _logger.LogInformation("Buscando entidad User por email: {Email}", email);
+
+            var user = await _unitOfWork.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+            if (user != null)
+            {
+                _logger.LogInformation("Entidad User encontrada para email: {Email}", email);
+            }
+            else
+            {
+                _logger.LogInformation("No se encontró entidad User para email: {Email}", email);
+            }
+
+            return user;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al buscar entidad User por email: {Email}", email);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Obtiene la entidad User completa por ID
+    /// </summary>
+    public async Task<User?> GetUserEntityByIdAsync(int userId)
+    {
+        try
+        {
+            _logger.LogInformation("Buscando entidad User por ID: {UserId}", userId);
+
+            var user = await _unitOfWork.Users.GetByIdAsync(userId);
+
+            if (user != null)
+            {
+                _logger.LogInformation("Entidad User encontrada para ID: {UserId}", userId);
+            }
+            else
+            {
+                _logger.LogInformation("No se encontró entidad User para ID: {UserId}", userId);
+            }
+
+            return user;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al buscar entidad User por ID: {UserId}", userId);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Actualiza una entidad User en la base de datos
+    /// </summary>
+    public async Task<bool> UpdateUserEntityAsync(User user)
+    {
+        try
+        {
+            _logger.LogInformation("Actualizando entidad User con ID: {UserId}", user.UserId);
+
+            _unitOfWork.Users.Update(user);
+            var result = await _unitOfWork.SaveChangesAsync();
+
+            if (result > 0)
+            {
+                _logger.LogInformation("Entidad User actualizada exitosamente: {UserId}", user.UserId);
+                return true;
+            }
+            else
+            {
+                _logger.LogWarning("No se pudo actualizar la entidad User: {UserId}", user.UserId);
+                return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al actualizar entidad User: {UserId}", user.UserId);
+            throw;
+        }
     }
 }

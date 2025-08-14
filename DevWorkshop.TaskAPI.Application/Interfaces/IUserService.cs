@@ -56,4 +56,25 @@ public interface IUserService
     /// <param name="excludeUserId">ID de usuario a excluir de la verificación</param>
     /// <returns>True si el email está en uso</returns>
     Task<bool> EmailExistsAsync(string email, int? excludeUserId = null);
+    /// <summary>
+    /// Obtiene la entidad User completa por email (incluye PasswordHash)
+    /// </summary>
+    /// <param name="email">Email del usuario</param>
+    /// <returns>Entidad User completa o null</returns>
+    Task<DevWorkshop.TaskAPI.Domain.Entities.User?> GetUserEntityByEmailAsync(string email);
+
+    /// <summary>
+    /// Obtiene la entidad User completa por ID (incluye PasswordHash)
+    /// </summary>
+    /// <param name="userId">ID del usuario</param>
+    /// <returns>Entidad User completa o null</returns>
+    Task<DevWorkshop.TaskAPI.Domain.Entities.User?> GetUserEntityByIdAsync(int userId);
+
+    /// <summary>
+    /// Actualiza una entidad User en la base de datos
+    /// </summary>
+    /// <param name="user">Entidad User a actualizar</param>
+    /// <returns>True si la actualización fue exitosa</returns>
+    Task<bool> UpdateUserEntityAsync(DevWorkshop.TaskAPI.Domain.Entities.User user);
+
 }

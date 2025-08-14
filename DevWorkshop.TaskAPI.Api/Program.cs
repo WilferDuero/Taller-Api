@@ -12,13 +12,14 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Configuración de AutoMapper
-builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddAutoMapper(typeof(DevWorkshop.TaskAPI.Application.Mappings.MappingProfile));
 
 // Registro de patrones Repository y Unit of Work
 builder.Services.AddScoped<DevWorkshop.TaskAPI.Application.Interfaces.IUnitOfWork, DevWorkshop.TaskAPI.Infrastructure.Repositories.UnitOfWork>();
 
 // Registro de servicios
 builder.Services.AddScoped<DevWorkshop.TaskAPI.Application.Interfaces.IRoleService, DevWorkshop.TaskAPI.Application.Services.RoleService>();
+builder.Services.AddScoped<DevWorkshop.TaskAPI.Application.Interfaces.IUserService, DevWorkshop.TaskAPI.Application.Services.UserService>();
 
 // Configuración de JWT
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
