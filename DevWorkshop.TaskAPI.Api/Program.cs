@@ -20,6 +20,8 @@ builder.Services.AddScoped<DevWorkshop.TaskAPI.Application.Interfaces.IUnitOfWor
 // Registro de servicios
 builder.Services.AddScoped<DevWorkshop.TaskAPI.Application.Interfaces.IRoleService, DevWorkshop.TaskAPI.Application.Services.RoleService>();
 builder.Services.AddScoped<DevWorkshop.TaskAPI.Application.Interfaces.IUserService, DevWorkshop.TaskAPI.Application.Services.UserService>();
+builder.Services.AddScoped<DevWorkshop.TaskAPI.Application.Interfaces.IAuthService, DevWorkshop.TaskAPI.Application.Services.AuthService>();
+
 
 // Configuración de JWT
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");

@@ -2,6 +2,7 @@ using DevWorkshop.TaskAPI.Application.DTOs.Auth;
 using DevWorkshop.TaskAPI.Application.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -213,27 +214,14 @@ public class AuthService : IAuthService
     
     }
 
-    Task<AuthResponseDto?> IAuthService.LoginAsync(LoginDto loginDto)
+   
+    private int GetJwtExpirationMinutes()
     {
-        throw new NotImplementedException();
+        var jwtSettings = _configuration.GetSection("JwtSettings");
+        return int.Parse(jwtSettings["ExpirationInMinutes"] ?? "60");
     }
 
-    bool IAuthService.VerifyPassword(string password, string hashedPassword)
-    {
-        throw new NotImplementedException();
-    }
-
-    string IAuthService.HashPassword(string password)
-    {
-        throw new NotImplementedException();
-    }
-
-    string IAuthService.GenerateJwtToken(int userId, string email, string? roleName)
-    {
-        throw new NotImplementedException();
-    }
-
-    Task<bool> IAuthService.LogoutAsync(int userId)
+    public Task<bool> LogoutAsync(int userId)
     {
         throw new NotImplementedException();
     }

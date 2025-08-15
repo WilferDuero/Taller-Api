@@ -190,55 +190,7 @@ public class UserService : IUserService
         throw new NotImplementedException("Método pendiente de implementación por el estudiante");
     }
 
-    Task<IEnumerable<UserDto>> IUserService.GetAllUsersAsync()
-    {
-        throw new NotImplementedException();
-    }
 
-    Task<UserDto?> IUserService.GetUserByIdAsync(int userId)
-    {
-        throw new NotImplementedException();
-    }
-
-    Task<UserDto?> IUserService.GetUserByEmailAsync(string email)
-    {
-        throw new NotImplementedException();
-    }
-
-    Task<UserDto> IUserService.CreateUserAsync(CreateUserDto createUserDto)
-    {
-        throw new NotImplementedException();
-    }
-
-    Task<UserDto?> IUserService.UpdateUserAsync(int userId, UpdateUserDto updateUserDto)
-    {
-        throw new NotImplementedException();
-    }
-
-    Task<bool> IUserService.DeleteUserAsync(int userId)
-    {
-        throw new NotImplementedException();
-    }
-
-    Task<bool> IUserService.EmailExistsAsync(string email, int? excludeUserId)
-    {
-        throw new NotImplementedException();
-    }
-
-    Task<User?> IUserService.GetUserEntityByEmailAsync(string email)
-    {
-        throw new NotImplementedException();
-    }
-
-    Task<User?> IUserService.GetUserEntityByIdAsync(int userId)
-    {
-        throw new NotImplementedException();
-    }
-
-    Task<bool> IUserService.UpdateUserEntityAsync(User user)
-    {
-        throw new NotImplementedException();
-    }
     /// <summary>
     /// Obtiene la entidad User completa por email
     /// </summary>
